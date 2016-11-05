@@ -1,10 +1,20 @@
 function run(msg)
-	blocks = load_data("../blocks.json")
+	blocks = load_data("blocks.json")
+	chats = load_data("chats.json")
+	requests = load_data("requests.json")
+	contact = load_data("contact.json")
+	location = load_data("location.json")
 	users = load_data("users.json")
-	channels = load_data("channels.json")
+	admins = load_data("admins.json")
+	setting = load_data("setting.json")
 	userid = tostring(msg.from.id)
-	keyboard = {{"ایجاد متن با فونتهای مختلف و هایپر لینک"},{"ارسال کیبرد شیشه ای به کانال"},{"درج زیرنویس در عکس، فیلم، گیف و فایل"},{"تبدیل فایل صوتی به ویس و بلعکس"},{"راهنما","درباره ما","تبلیغ و تبادل"}}
-	
+        msg.text = msg.text:gsub("@"..bot.username,"")
+------------------------------------------------------
+        start = "`سلام!`\n`به روبات سایبر خوش آمدی!`\n`لطفا زبان خود را انتخاب کنید!`\n\n*Hi!*\n_Welcome To CyberBot!_\n*Please Select Your Language!*"
+	startkey = {{"🇮🇷 فارسی 🇮🇷"},{"🇬🇧 English 🇬🇧"}}
+	help = {{"Help"}}
+	helpfa = {{"راهنما"}}
+
 	if msg.chat.type == "channel" then
 		return
 	elseif msg.chat.type == "supergroup" or msg.chat.type == "group" then
@@ -14,40 +24,46 @@ function run(msg)
 	end
 
 	if msg.text == "/start" then
-		start_txt = "به ربات "..bot.first_name..' خوش آمدید\n\n`در این ربات امکانات زیر را به صورت رایگان خواهید داشت:\n   - ساخت کلید شیشه ای برای کانال\n   - قرار دادن لینک روی متن، هایپر لینک\n   - نوشتن متن با فونتهای مختلف\n   - تبدیل ویس و فایل صوتی به یکدیگر\n   - و...`\n\nتوجه کنید!\nاین ربات ضد اسپم بوده و هرگونه اسپم و فلود را تشخیص میدهد و در صورتی که اسپم کنید از ربات بلاک میشوید و دیگر ربات به شما پاسخ نخواهد داد. دقت کنید که آنبلاک کردن رایگان نخواهد بود.'
 		if users[userid] then
 			users[userid].username = (msg.from.username or false)
 			save_data("users.json", users)
 			users[userid].action = 0
 			save_data("users.json", users)
-			return send_key(msg.from.id, start_txt, keyboard)
+			return send_key(msg.from.id, start, startkey)
 		else
 			users[userid] = {}
 			users[userid].username = (msg.from.username or false)
 			users[userid].action = 0
 			save_data("users.json", users)
-			return send_key(msg.from.id, start_txt, keyboard)
+			return send_key(msg.from.id, start, startkey)
 		end
 	elseif not users[userid] then
 		users[userid] = {}
 		users[userid].username = (msg.from.username or false)
 		users[userid].action = 0
 		save_data("users.json", users)
-		return send_key(msg.from.id, start_txt, keyboard)
-	elseif msg.text == "ارتباط با ما" or msg.text == "درباره ما" or msg.text:lower() == "about" then
-		about_txt = "*LTD Robot* v"..bot_version.."\n`رباتی منحصر به فرد و رایگان برای مدیران کانال ها و افرادی که میخواهند خاص و متفاوت باشند.\nامکانات ربات:`\n   - ساخت کلید شیشه ای برای کانال\n   - قرار دادن لینک روی متن، هایپر لینک\n   - نوشتن متن با فونتهای مختلف\n   - تبدیل ویس و فایل صوتی به یکدیگر\n   - و...\n\n`محصولی از تیم قدرتمند آمبرلا.`\nبرنامه نویس: [مهندس شایان احمدی](https://telegram.me/shayan_soft)\nطراح و گرافیست: [محمد ملا قاسمی](https://telegram.me/graphi2)"
-		about_key = {{{text = "کانال تیم آمبرلا" , url = "https://telegram.me/UmbrellaTeam"}},{{text = "مهندس شایان احمدی" , url = "https://telegram.me/shayan_soft"}}}
-		return send_inline(msg.from.id, about_txt, about_key)
-	elseif msg.text == "راهنما" or msg.text == "/help" or msg.text:lower() == "help" or msg.text == "راهنمای ربات" then
-		help_admin = "_Admin Commands:_\n\n".."   *Block a user:*\n     `/block {telegram id}`\n\n".."   *Unblock a user:*\n     `/unblock {telegram id}`\n\n".."   *Block list:*\n     /blocklist\n\n".."   *Send message to all users:*\n     `/sendtoall {message}`\n\n".."   *All users list:*\n     /users"
-		help_user = "ربات LTD نسخه ی "..bot_version..'\n\n- ایجاد متن با فونتهای مختلف و هایپر لینک:\n`از طریق این قابلیت میتوانید متون انگلیسی خود را به 4 حالت کلفت نویس، کج نویس، کد نویس و هایپر لینک و همچنین متون فارسی را با 2 حالت هایپر لینک و کد نویس بنویسید. به این قابلیت مارک داون نیز گفته میشود. هایپر لینک ها متونی هستند که با کلیک بر روی آنها لینکی باز خواهد شد.`\n\n- ارسال کیبرد شیشه ای به کانال:\n`از طریق این قابلیت میتوانید کیبرد شیشه ای مورد نظر خود را بسازید و با استفاده از قابلیت اینلاین، در محل مورد نظر ارسال کنید. روش کار بسیار ساده است و با توجه به توضیحی که هر کلید ارائه میکند عمل کنید. پس از ساخت کلید شیشه ای، ربات به شما پیامی حاوی یک کد ارائه میدهد که آن را باید در محل تایپ وارد کنید و منتظر بمانید تا کلیدی در بالای محل تایپ ظاهر شود، با انتخاب آن کلید کیبرد شما با کلید های شیشه ای در محل مورد نظر ارسال میگردد.`\n\n- تبدیل فایل صوتی به ویس و بلعکس:\n`با استفاده از این قابلیت میتوانید ویس را به فایل صوتی و فایل صوتی را به ویس تبدیل کنید.`\n\n- تبلیغ و تبادل:\n`در این قسمت شما میتوانید با ما در خصوص تبادل تبلیغ ارتباط برقرار کنید. تبادل و تبلیغ در این ربات انجام خواهد شد. دقت کنید که آمار کانال و ربات به طور لحظه ای و دقیق در این بخش نمایش داده خواهد شد.`\n\nطراحی و تولید در [تیم آمبرلا](https://instagram.com/umbrellateam)'
+		return send_key(msg.from.id, start, startkey)
+	elseif msg.text == "🇬🇧 English 🇬🇧" then
+		about_txt = "*CyberBot Version 3.0*\n*Developed By @This_Is_Pouria*"
+		about_key = {{{text = "Bot Channel" , url = "https://telegram.me/CyberCH"}},{{text = "Developer" , url = "https://telegram.me/This_Is_Pouria"}}}
+		return send_inline(msg.from.id, about_txt, about_key, help)
+	elseif msg.text == "🇮🇷 فارسی 🇮🇷" then
+		about_txt = "`روبات سایبر ورژن 3.0`\n`توسعه یافته توسط @This_Is_Pouria`"
+		about_key = {{{text = "کانال روبات" , url = "https://telegram.me/CyberCH"}},{{text = "توسعه دهنده" , url = "https://telegram.me/This_Is_Pouria"}}}
+		return send_inline(msg.from.id, about_txt, about_key, helpfa)
+	elseif msg.text == "راهنما" then
+		help_admin = "تست"
+		help_user = "پوکر"
+	elseif msg.text == "Help" then
+		help_admin = "test"
+		help_user = "poker"
 		if msg.chat.id == admingp then
 			return send_msg(admingp, help_admin, true)
 		else
 			return send_msg(msg.from.id, help_user, true)
 		end
 	elseif msg.text == "تبلیغ و تبادل" then
-		rdjvn = mem_num("@umbrellateam")
+		rdjvn = mem_num("@CyberCH")
 		i=0
 		for k,v in pairs(users) do
 			i=i+1
