@@ -6,6 +6,7 @@ function run(msg)
         convert = {{"HTML>EXE","HTML>PHP","HTML>JS"},{"HTML>JAVA","HTML>HTA","HTML>ASPX"},{"JAR>EXE","PNG>JPG","JPG>PNG"},{"TIF>PNG","TIF>JPG","GIF>JPG"},{"GIF>PNG","DPX>JPG","DPX>PNG"},{"sticker>photo","sticker>file","file>sticker"},{"photo>sticker","photo>file","file>photo"},{"text>photo","photo>exe","video>file"},{"file>video","video>gif","gif>video"},{"audio>voice","voice>audio","text>voice"},{"text>audio","qr-code>text","qr-code>voice"},{"text>qr-code","text>barcode","text>font"},{"text>style","text>nashr","text>file"},{"text>hash-b64","hash-b64>text","منوی اصلی"}}
         fonts = {{"Arial","Comic","Dyslexic"},{"Georgia","Impact","Lucida"},{"Simsun","Tahoma","Times"},{"Trebuchet","Verdana"}}
 	menu = {{"اخبار فوتبال های جهان","مدیریت کانال و زیرنویس"},{"تبدیل کننده فایل ها","چت با ادمین"},{"درباره ما"}}
+	chat = {{"ارسال درخواست چت"},{text="ارسال شماره شما به من",request_contact=true},{text="ارسال مکان شما به من",request_location=true},{"شماره من"}}
 ------------------------------------------------------
 	blocks = load_data("blocks.json")
 	chats = load_data("chats.json")
@@ -203,33 +204,20 @@ function run(msg)
 		else
 			return send_msg(msg.from.id, "`شما از دوستان نیستید و امکان استفاده از این سرویس را ندارید`", true)
 		end
-	elseif msg.text == "اخبار فوتبال" and msg.chat.id == admingp then
-		adminkey = "
+	elseif msg.text == "اخبار فوتبال های جهان" and msg.chat.id == admingp then
 		return send_key(msg.from.id, "`از دکمه های زیر استفاده کنید`", sport, true)
-	elseif msg.text:find("/info") or msg.text:lower() == "my info" or msg.text == "بیوگرافی من" then
-		if msg.chat.id == admingp then
-			local usertarget = msg.text:input()
-			if usertarget then
-				local file = io.open("./about.txt", "w")
-				file:write(usertarget)
-				file:flush()
-				file:close() 
-				return send_msg(admingp, "`مطلب مورد نظر درباره ی شما ذخیره شد`", true)
-			else
-				return send_msg(admingp, "`بعد از این دستور مطالب مورد نظر راجبه خود را وارد کنید`", true)
-			end
-		else
-			local f = io.open("./about.txt")
-			if f then
-				s = f:read('*all')
-				f:close()
-				infotxts = "`بیوگرافی:`\n"..s.."\n\n"
-			else
-				infotxts = ""
-			end
-			bioinfo = infotxts.."*نام:* "..sudo_name.."\n*یوزرنیم:* [@"..sudo_user.."](https://telegram.me/"..sudo_user..")\n*شماره تلفن:* +"..sudo_num.."\n*آیدی تلگرام:* "..sudo_id.."\n*کانال:* [@"..sudo_ch.."](https://telegram.me/"..sudo_ch..
-			send_msg(msg.chat.id, bioinfo, true)
-		end
+	elseif msg.text == "مدیریت کانال و زیرنویس" and msg.chat.id == admingp then
+		adminkey = "`از دکمه های زیر استفاده کنید`"
+		return send_key(msg.from.id, adminkey, fun, true)
+	elseif msg.text == "چت با ادمین" and msg.chat.id == admingp then
+		adminkey = "`از دکمه های زیر استفاده کنید`"
+		return send_key(msg.from.id, adminkey, chat, true)
+	elseif msg.text == "تبدیل کننده فایل ها" and msg.chat.id == admingp then
+		adminkey = "`از دکمه های زیر استفاده کنید`"
+		return send_key(msg.from.id, adminkey, convert, true)
+	elseif msg.text == "درباره ما" and msg.chat.id == admingp then
+		adminkey = "*PlusBot*\n_A Helpfull Robot Based In Lua_\n*Developed By @This_Is_Pouria*\n\n*Powered By* [PluaTeam](telegram.me/PlusTM)"
+		return send_key(msg.from.id, adminkey, true)
 	elseif msg.text:find('/block') and msg.chat.id == admingp then
 		local usertarget = msg.text:input()
 		if usertarget then
