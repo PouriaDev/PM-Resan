@@ -915,274 +915,7 @@ function cron()
 		end
 	end
 
-----------antispam-----------
-
-function manage_group(msg)
-	msg.text = msg.text:gsub("@TGPLUSBOT","")
-	if not groups[gpid] then
-		groups[gpid] = {anti=true,welcome="def"}
-		save_data("groups.json", groups)
-	end
-	
-	if msg.new_chat_member then
-		if msg.new_chat_member.id == bot.id then
-			return send_msg(msg.chat.id, "سلام و عرض ادب\n`من ربات ضد تبلیغ و نگهبان هستم و اگر منو مدیر گروه کنی میتونم افرادی که تبلیغ میکنن رو از گروه حذف کنم یا به اونها اخطار بدم.\nقابلیت های زیادی دارم که بعد از مدیر شدنم در گروه میتونین از من رایگان استفاده کنید، برای آشنایی بیشتر روی `/help` یک بار بزنید. همچنین در چت خصوصی میتونم کیبرد شیشه ای بسازم، متن به عکس و فیلم الصاق کنم و...\nبعد از مدیر کردنم در گروه، اگر مدیر گروه هستی مجدد روی `/help` یک بار کلیک کن تا بتونی تنظیمم کنی.`", true)
-		else
-			if groups[gpid].welcome then
-				if groups[gpid].welcome == "def" then
-					wel_text = "سلام "..(msg.from.first_name or msg.from.last_name).." خوش اومدین\n\nاگر مایلی منو با کلی قابلیت به گروهت اضافه کن، ضد تبلیغات هم هستم."
-				else
-					wel_text = groups[gpid].welcome.."\n\nاگر مایلی منو با کلی قابلیت به گروهت اضافه کن، ضد تبلیغات هم هستم."
-				end
-				return send_inline(msg.chat.id, wel_text, add_key, true)
-			else
-				return
-			end
-		end
-	end
-	
-	if msg.text:lower() == "/info" then
-		if msg.reply_to_message then
-			fname = (msg.reply_to_message.from.first_name or " "):gsub("`","")
-			lname = (msg.reply_to_message.from.last_name or " "):gsub("`","")
-			info = "نام: "..fname.."\n\n"
-				.."فامیل: "..lname.."\n\n"
-				.."یوزرنیم: @"..(msg.reply_to_message.from.username or "-----").."\n\n"
-				.."شناسه: "..msg.reply_to_message.from.id.."\n\n"
-				.."نام گروه: "..msg.chat.title.."\n\n"
-				.."شناسه گروه: "..msg.chat.id.."\n\n"
-				.."نوع گروه: "..msg.chat.type
-			if msg.reply_to_message.forward_from then
-				fname = (msg.reply_to_message.forward_from.first_name or ""):gsub("`","")
-				lname = (msg.reply_to_message.forward_from.last_name or ""):gsub("`","")
-				info = info.."\n==============================\nمشخصات ارسال کننده اصلی:\n\n"
-					.."نام: "..fname.."\n\n"
-					.."فامیل: "..lname.."\n\n"
-					.."یوزرنیم: @"..(msg.reply_to_message.forward_from.username or "-----").."\n\n"
-					.."شناسه: "..msg.reply_to_message.forward_from.id
-			end
-		else
-			fname = (msg.from.first_name or ""):gsub("`","")
-			lname = (msg.from.last_name or ""):gsub("`","")
-			info = "نام: "..fname.."\n\n"
-				.."فامیل: "..lname.."\n\n"
-				.."یوزرنیم: @"..(msg.from.username or "-----").."\n\n"
-				.."شناسه: "..msg.from.id.."\n\n"
-				.."نام گروه: "..msg.chat.title.."\n\n"
-				.."شناسه گروه: "..msg.chat.id.."\n\n"
-				.."نوع گروه: "..msg.chat.type
-		end
-		return send_msg(msg.chat.id, "`"..info.."`", true)
-	elseif msg.text:lower() == "/id" then
-		if msg.reply_to_message then
-			return send_msg(msg.chat.id, msg.reply_to_message.from.id, false)
-		else
-			return send_msg(msg.chat.id, msg.from.id, false)
-		end	
-	statuss = mem_info(msg.chat.id, bot.id)
-	if statuss then
-		if statuss.result then
-			if statuss.result.status then
-				if statuss.result.status == "administrator" then
-					master = true
-				else
-					master = false
-				end
-			else
-				master = false
-			end
-		else
-			master = false
-		end
-	else
-		master = false
-	end
-
-	intxt = msg.text:lower()
-	if intxt:find('telegram.me') or intxt:find('tlgrm.me') then
-		if if_admin(msg) then
-			return
-		end
-		if not master then
-			return send_msg(msg.chat.id, "`تبلیغات در گروه ممنوع است، در صورت تکرار با شما برخورد میشود`", true)
-		else
-			if groups[gpid].ads then
-				if groups[gpid].ads == "warn" then
-					return send_msg(msg.chat.id, "`تبلیغات در گروه ممنوع است، در صورت تکرار با شما برخورد میشود`", true)
-				elseif groups[gpid].ads == "kick" then
-					send_msg(msg.chat.id, "`تبلیغات در گروه ممنوع است.`", true)
-					return kick(msg.chat.id, msg.from.id)
-				else
-					return
-				end
-			else
-				return send_msg(msg.chat.id, "`تبلیغات در گروه ممنوع است، در صورت تکرار با شما برخورد میشود`", true)
-			end
-		end
-	end
-	
-	if msg.text:lower() == "/help" or msg.text:lower() == "help" or msg.text == "راهنما" then
-		if not master then
-			text = "ربات نگهبان گروه و ضد لینک:\n`این ربات مدیر گروه نشده است و فقط 2 دستور آن فعال میباشد. برای فعال کردن همه ی قابلیت ها لازم است که ربات را مدیر گروه کنید. زمانی که ربات مدیر گروه نیست، واکنش به تبلیغات فقط اخطار است و پیام خوش آمد گویی نیز فقط پیشفرض میباشد همچنین نمیتوانید برای گروه قوانین ثبت کنید.\n\n`"
-				.."==============================\n"
-				.."/info\nدریافت مشخصات شما و گروه. اگر دستور را با شخصی رپلی کنید مشخصات آن شخص را به دست می آورید\n"
-				.."==============================\n"
-				.."/id\nدریافت شناسه تلگرام. اگر دستور را با شخصی رپلی کنید شناسه ی شخص را به دست می آورید\n"
-				.."==============================\n\n"
-				.."`اگر تمایل به استفاده از این ربات در گروه خود دارید، ربات را به گروه خود دعوت کنید.`"
-		else
-			if if_admin(msg) then
-				text = "لیست دستورات مدیریتی:\n\n"
-					.."/kick ریپلی با شخصی\nحذف کاربر از گروه\n"
-					.."==============================\n"
-					.."/rules\nمشاهده ی قوانین\n"
-					.."==============================\n"
-					.."/modlist\nلیست مدیران گروه\n"
-					.."==============================\n"
-					.."/info\nدریافت مشخصات شما و گروه. اگر دستور را با شخصی رپلی کنید مشخصات آن شخص را به دست می آورید\n"
-					.."==============================\n"
-					.."/id\nدریافت شناسه تلگرام. اگر دستور را با شخصی رپلی کنید شناسه ی شخص را به دست می آورید\n"
-					.."==============================\n"
-					.."/welcome_no\nغیر فعال سازی خوش آمد گویی\n"
-					.."==============================\n"
-					.."/welcome_yes\nفعال سازی خوش آمد گویی\n"
-					.."==============================\n"
-					.."/welcome_set پیام\nثبت پیام خوش آمدگویی\n"
-					.."==============================\n"
-					.."/rules_set پیام\nثبت قوانین\n"
-					.."==============================\n"
-					.."/rules_no\nحذف قوانین\n"
-					.."==============================\n"
-					.."/ads_kick\nحذف تبلیغ کنندگان\n"
-					.."==============================\n"
-					.."/ads_warn\nاخطار به ابلیغ کنندگان\n"
-					.."==============================\n"
-					.."/ads_no\nبی اعتنا به تبلیغ کنندگان"
-				return send_msg(msg.chat.id, text, false)
-			else
-				text = "ربات نگهبان گروه و ضد لینک:\n\n"
-					.."==============================\n"
-					.."/about\nدرباره سازنده ربات\n"
-					.."==============================\n"
-					.."/kickme\nحذف شما از گروه\n"
-					.."==============================\n"
-					.."/rules\nمشاهده ی قوانین\n"
-					.."==============================\n"
-					.."/modlist\nلیست مدیران گروه\n"
-					.."==============================\n"
-					.."/info\nدریافت مشخصات شما و گروه. اگر دستور را با شخصی رپلی کنید مشخصات آن شخص را به دست می آورید\n"
-					.."==============================\n"
-					.."/id\nدریافت شناسه تلگرام. اگر دستور را با شخصی رپلی کنید شناسه ی شخص را به دست می آورید\n"
-					.."==============================\n\n"
-					.."`اگر تمایل به استفاده از این ربات در گروه خود دارید، ربات را به گروه خود دعوت کنید.`"
-			end
-		end
-		return send_inline(msg.chat.id, text, add_key)
-	elseif msg.text:lower() == "/kickme" then
-		if not master then
-			return send_msg(msg.chat.id, "`من در گروه مدیر نیستم تا قابلیتم فعال بشه`", true)
-		end
-		if if_admin(msg) then
-			return send_msg(msg.chat.id, "`شما مدیر هستید.`", true)
-		end
-		return kick(msg.chat.id, msg.from.id)
-	elseif msg.text:lower() == "/kick" then
-		if not master then
-			return send_msg(msg.chat.id, "`من در گروه مدیر نیستم تا قابلیتم فعال بشه`", true)
-		end
-		if not if_admin(msg) then
-			return send_msg(msg.chat.id, "`فقط ادمینهای من میتونن از این دستور استفاده کنن`", true)
-		end
-		if msg.reply_to_message then
-			if if_admin(msg.reply_to_message) then
-				return send_msg(msg.chat.id, "`شخص مورد نظر "..admin_name.." است و نمیتوانید او را حذف کنید.`", true)
-			end
-			return kick(msg.chat.id, msg.reply_to_message.from.id)
-		else
-			return send_msg(msg.chat.id, "`برای حذف یک نفر، این دستور روی پیام اون رپلی بشه.`", true)
-		end
-	elseif msg.text:lower() == "/modlist" then
-		if not master then
-			return send_msg(msg.chat.id, "`من در گروه مدیر نیستم تا قابلیتم فعال بشه`", true)
-		end
-		admintab = admins(msg.chat.id)
-		adminlist = ""
-		a = 0
-		for i=1,#admintab.result do
-			if admintab.result[i].status == "creator" then
-				creator = "Leader: "..admintab.result[i].user.id.." - @"..(admintab.result[i].user.username or "-----").."\n"
-			else
-				a = a+1
-				adminlist = adminlist..a.."- "..admintab.result[i].user.id.." - @"..(admintab.result[i].user.username or "-----").."\n"
-			end
-		end
-		text = "لیست مدیران گروه "..msg.chat.title.."\n==============================\n"..(creator or "")..adminlist
-		return send_msg(msg.chat.id, text, false)
-	elseif msg.text:lower() == "/rules" then
-		if not groups[gpid].rules then
-			return send_msg(msg.chat.id, "`برای گروه قوانین ثبت نشده است.`", true)
-		else
-			return send_msg(msg.chat.id, "قوانین گروه:\n\n"..groups[gpid].rules, false)
-		end
-	elseif msg.text:lower() == "/welcome_no" and if_admin(msg) then
-		groups[gpid].welcome = false
-		save_data("groups.json", groups)
-		return send_msg(msg.chat.id, "`پیام خوش آمد گویی غیر فعال شد.`", true)
-	elseif msg.text:lower() == "/welcome_yes" and if_admin(msg) then
-		groups[gpid].welcome = "def"
-		save_data("groups.json", groups)
-		return send_msg(msg.chat.id, "`پیام خوش آمد گویی فعال شد.`", true)
-	elseif msg.text:find('/welcome_set') and if_admin(msg) then
-		wtext = msg.text:input()
-		if wtext then
-			groups[gpid].welcome = wtext
-			save_data("groups.json", groups)
-			return send_msg(msg.chat.id, "`پیام خوش آمد گویی ثبت و فعال شد.`", true)
-		else
-			return send_msg(msg.chat.id, "`بعد از این دستور، پیام خوش آمدگویی مورد نظر را وارد نمایید.`", true)
-		end
-	elseif msg.text:lower() == "/rules_no" and if_admin(msg) then
-		groups[gpid].rules = false
-		save_data("groups.json", groups)
-		return send_msg(msg.chat.id, "`قوانین حذف شدند.`", true)
-	elseif msg.text:find('/rules_set') and if_admin(msg) then
-		rtext = msg.text:input()
-		if rtext then
-			groups[gpid].rules = rtext
-			save_data("groups.json", groups)
-			return send_msg(msg.chat.id, "`قوانین ثبت شدند.`", true)
-		else
-			return send_msg(msg.chat.id, "`بعد از این دستور، قوانین مورد نظر را وارد نمایید.`", true)
-		end
-	elseif msg.text:lower() == "/ads_no" and if_admin(msg) then
-		groups[gpid].ads = "no"
-		save_data("groups.json", groups)
-		return send_msg(msg.chat.id, "`حساسیت به تبلیغات غیر فعال شد.`", true)
-	elseif msg.text:lower() == "/ads_kick" and if_admin(msg) then
-		if not master then
-			return send_msg(msg.chat.id, "`من در گروه مدیر نیستم تا قابلیتم فعال بشه`", true)
-		end
-		groups[gpid].ads = "kick"
-		save_data("groups.json", groups)
-		return send_msg(msg.chat.id, "`حساسیت به تبلیغات فعال و کاربرانی که تبلیغ بگذارند حذف خواهند شد.`", true)
-	elseif msg.text:lower() == "/ads_warn" and if_admin(msg) then
-		groups[gpid].ads = "warn"
-		save_data("groups.json", groups)
-		return send_msg(msg.chat.id, "`حساسیت به تبلیغات فعال و به کاربرانی که تبلیغ کنند اخطار داده خواهد شد.`", true)
-	end
-end
-
-	if msg.text:lower() == "/rules" or msg.text:lower() == "/kickme" or msg.text:lower() == "/modlist" then
-		return send_msg(msg.from.id, "`این سرویس فقط در گروه فعال است.`", true)
-	elseif msg.text:lower() == "/id" then
-		return send_msg(msg.from.id, msg.from.id, true)
-	elseif msg.text:lower() == "/info" then
-		info = "`نام: `"..(msg.from.first_name or "").."\n\n"
-			.."`فامیل: `"..(msg.from.last_name or "").."\n\n"
-			.."`یوزرنیم: `@"..(msg.from.username or "-----").."\n\n"
-			.."`شناسه: `"..msg.from.id.."\n\n"
-		return send_msg(msg.chat.id, info, true)
-	elseif msg.text == '/sendtoallgp' and msg.chat.id == sudo_id then
+	if msg.text == '/sendtoallgp' and msg.chat.id == sudo_id then
 		if msg.reply_to_message then
 			send_msg(sudo_id, "منتظر بمانید...", true)
 			i=0
@@ -1214,11 +947,6 @@ end
 		else
 			return send_msg(sudo_id, "`این دستور را با یک پیام متنی، فیلم، عکس، موسیقی و... ریپلی کنید.`", true)
 		end
-	elseif msg.text == "نگهبان گروه و ضد تبلیغ" then
-		users[userid].action = 0
-		save_data("users.json", users)
-		gp_in_txt = "با افزودن این ربات به گروه خود میتوانید افرادی که در گروه تبلیغ میکنند را به صورت اتوماتیک حذف کنید یا فقط به آنان اخطار دهید. همچنین میتوانید پیام خوش آمد گویی برای گروه ثبت نمایید که به محض ورود هر شخص، متن نمایان شود همچنین میتوانید قوانین برای گروه نصب کنید. دقت کنید که به محض افزودن ربات به گروه، باید ربات را نیز مدیر گروه قرار دهید و بعد از آن، همه ی مدیران گروه، مدیر ربات نیز میشوند و میتوانند تنظیمات را تغییر دهند. این ربات در گروه کارایی های دیگر هم دارد."
-		return send_inline(msg.from.id, gp_in_txt, add_key)
 
 ----------convertor----------
 
@@ -2212,7 +1940,7 @@ end
 function back(msg)
 	users[userid].action = 0
 	save_data("users.json", users)
-	return send_key(msg.from.id, "*HOME*", keyboard)
+	return send_key(msg.from.id, "*HOME*", convert)
 end
 
 function check_match(txt, tab)
@@ -2337,39 +2065,11 @@ end
 		users[userid].sub = 1
 		return save_data("users.json", users)
 	else
-		return send_key(msg.from.id, "_Input is_ *False,* _select a key of keyboard_", keyboard)
+		return send_key(msg.from.id, "_Input is_ *False,* _select a key of keyboard_", convert)
 	end
 end
 
 function cbinline(msg)
-	tab1 = '{"type":"article","parse_mode":"Markdown","disable_web_page_preview":true,"id":'
-	thumb = "http://umbrella.shayan-soft.ir/inline_icons/"
-	ercomp = "مراحل ساخت کیبرد اینلاین به اتمام نرسیده است، لطفا طبق الگو عمل کنید، برای آموزش بیشتر راهنما را از داخل ربات مشاهده فرمایید.\n@KeykYazdiBot"
-	if msg.query == "" or msg.query == nil then
-		tab_inline = tab1..'"1","title":"متن تیتر","description":"تیتر اصلی کیبرد را وارد کنید بعد علامت # بگذارید","message_text":"'..ercomp..'","thumb_url":"'..thumb..'keyk_t.png"}'
-	else
-		if msg.query:find('#') then
-			if msg.query:find('=') then
-				if msg.query:find('>') then
-					spel = msg.query:split("#")
-					titr = spel[1]
-					spel = spel[2]:split("=")
-					keytxt = spel[1]
-					spel = spel[2]:split(">")
-					keyurl = spel[1]
-					tab_inline = tab1..'"2","title":"اتمام مراحل","description":"کلید ساخته شد، برای ارسال کلیک کنید","message_text":"'..titr..'","thumb_url":"'..thumb..'keyk_ok.png","reply_markup":{"inline_keyboard":[[{"text":"'..keytxt..'","url":"'..keyurl..'"}]]}}'
-				else
-					tab_inline = tab1..'"3","title":"لینک کلید","description":"لینک کلید را با http:// وارد کنید بعد علامت > بگذارید","message_text":"'..ercomp..'","thumb_url":"'..thumb..'keyk_k.png"}'
-				end
-			else
-				tab_inline = tab1..'"4","title":"متن کلید","description":"متن کلید را وارد کنید بعد علامت = بگذارید","message_text":"'..ercomp..'","thumb_url":"'..thumb..'keyk_k.png"}'
-			end
-		else
-			tab_inline = tab1..'"5","title":"متن تیتر","description":"تیتر اصلی کیبرد را وارد کنید بعد علامت # بگذارید","message_text":"'..ercomp..'","thumb_url":"'..thumb..'keyk_t.png"}'
-		end
-	end
-	return send_req(send_api.."/answerInlineQuery?inline_query_id="..msg.id.."&is_personal=true&cache_time=1&results="..url.escape('['..tab_inline..']'))
-end
 	bb = tonumber(msg.data)*5
 	aa = bb-4
 	local res,dat = http.request('http://api.varzesh3.com/v0.2/news/live/1360000')
