@@ -4,7 +4,7 @@ function run(msg)
 	iranlig = {{"دسته یک ایران"},{"لیگ فوتسال ایران"},{"آلمان"},{"اسپانیا"},{"ایتالیا"},{"انگلیس"},{"فرانسه"},{"لیگ برتر هلند"},{"لیگ برتر روسیه"},{"مقدماتی آسیا گروه A"},{"مقدماتی آسیا گروه B"}{"برگشت"}}
         fun = {{"ارسال کیبرد شیشه ای به کانال"},{"فوروارد به کانال بدون منبع"},{"ارسال هر نوع فایل با زیر نویس"},{"ارسال پست با فونت های مختلف"},{"ثبت امضا"},{"حذف امضا"},{"نمایش امضا"},{"ایجاد متن با فونت های مختلف"},{"فوروارد به کانال بدون منبع"},{"منوی اصلی"}}
         convert = {{"HTML>EXE","HTML>PHP","HTML>JS"},{"HTML>JAVA","HTML>HTA","HTML>ASPX"},{"JAR>EXE","PNG>JPG","JPG>PNG"},{"TIF>PNG","TIF>JPG","GIF>JPG"},{"GIF>PNG","DPX>JPG","DPX>PNG"},{"sticker>photo","sticker>file","file>sticker"},{"photo>sticker","photo>file","file>photo"},{"text>photo","photo>exe","video>file"},{"file>video","video>gif","gif>video"},{"audio>voice","voice>audio","text>voice"},{"text>audio","qr-code>text","qr-code>voice"},{"text>qr-code","text>barcode","text>font"},{"text>style","text>nashr","text>file"},{"text>hash-b64","hash-b64>text","منوی اصلی"}}
-        fonts = {{"Arial","Comic","Dyslexic"},{"Georgia","Impact","Lucida"},{"Simsun","Tahoma","Times"},{"Trebuchet","Verdana"}}
+        keyboard = {{"فثسف"}}
 	menu = {{"اخبار فوتبال های جهان","مدیریت کانال و زیرنویس"},{"تبدیل کننده فایل ها","چت با ادمین"},{"درباره ما"}}
 	chat = {{"ارسال درخواست چت"},{text="ارسال شماره شما به من",request_contact=true},{text="ارسال مکان شما به من",request_location=true},{"شماره من"}}
 ------------------------------------------------------
