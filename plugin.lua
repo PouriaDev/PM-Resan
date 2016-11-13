@@ -1,10 +1,15 @@
 function run(msg)
 	sudo = {{"اضافه کردن تعداد محصول","آمار ادمین ها","لیست فروش ادمین ها"},{"قیمت کل فروش","تعیین تعداد محصول","اضافه کردن تعداد محصول به لیست"}}
-        member = {{"کل محصولات","لیست محصولات","موجودی محصولات"},{"سایت شرکت","لینک پرداخت","ارتباط با ما"}}
+        member = {{"لیست محصولات","موجودی محصولات"},{"سایت شرکت","لینک پرداخت","ارتباط با ما"}}
 	chat = {{"ارسال درخواست چت"},{text="ارسال شماره شما",request_contact=true},{text="ارسال مکان شما",request_location=true}}
 	start = "`سلام`\n`به این روبات خوش آمدید!`\n`لطفا از کیبورد اصتفاده کنید!`"
 ------------------------------------------------------
 	blocks = load_data("blocks.json")
+	site = load_data("site.json")
+	buy = load_data("buy.json")
+	list = load_data("list.json")
+	shop = load_data("shop.json")
+	adminstats = load_data("adminstats.json")
 	chats = load_data("chats.json")
 	requests = load_data("requests.json")
 	contact = load_data("contact.json")
@@ -124,7 +129,7 @@ function run(msg)
 			end
 		end
 		return send_msg(admingp, "*Block list:\n\n*"..list, true)
-	elseif msg.text == "/friends" and msg.chat.id == admingp then
+	elseif msg.text == "/adminlist" and msg.chat.id == admingp then
 		local list = ""
 		i=0
 		for k,v in pairs(admins) do
@@ -133,7 +138,59 @@ function run(msg)
 				list = list..i.."- *"..k.."*\n"
 			end
 		end
-		return send_msg(admingp, "*Friends list:\n\n*"..list, true)
+		return send_msg(admingp, "*Admin list:\n\n*"..list, true)
+	elseif msg.text == "لیست فروش ادمین ها" and msg.chat.id == admingp then
+		local list = ""
+		i=0
+		for k,v in pairs(list) do
+			if v then
+				i=i+1
+				list = list..i.."- *"..k.."*\n"
+			end
+		end
+		return send_msg(admingp, "*لیست فروش ادمین ها:\n\n*"..list, true)
+	elseif msg.text == "آمار ادمین ها" and msg.chat.id == admingp then
+		local list = ""
+		i=0
+		for k,v in pairs(adminstats) do
+			if v then
+				i=i+1
+				list = list..i.."- *"..k.."*\n"
+			end
+		end
+		return send_msg(admingp, "*آمار ادمین ها:\n\n*"..list, true)
+	elseif msg.text == "سایت شرکت" then
+		local list = ""
+		i=0
+		for k,v in pairs(site) do
+			if v then
+				i=i+1
+				list = list..i.."- *"..k.."*\n"
+			end
+		end
+		return send_msg(admingp, "*سایت شرکت:\n\n*"..list, true)
+	elseif msg.text == "لینک پرداخت" then
+		local list = ""
+		i=0
+		for k,v in pairs(buy) do
+			if v then
+				i=i+1
+				list = list..i.."- *"..k.."*\n"
+			end
+		end
+		return send_msg(admingp, "*لینک پرداخت:\n\n*"..list, true)
+	elseif msg.text == "لیست محصولات" then
+		local list = ""
+		i=0
+		for k,v in pairs(shop) do
+			if v then
+				i=i+1
+				list = list..i.."- *"..k.."*\n"
+			end
+		end
+		return send_msg(admingp, "*لیست محصولات:\n\n*"..list, true)
+	elseif msg.text == "ارتباط با ما" then
+		send_key(msg.from.id, "از کیبورد زیر استفاده کنید", chat)
 	elseif msg.text == "ارسال درخواست چت" then
 		if msg.chat.id == admingp then
 			local list = ""
@@ -164,6 +221,54 @@ function run(msg)
 				return send_msg(admingp, text, false)
 			end
 		end
+	elseif msg.text:find('/addadmin') and msg.chat.id == admingp then
+		local usertarget = msg.text:input()
+		if usertarget then
+			if admins[tostring(usertarget)] then
+				admins[tostring(usertarget)] = false
+				save_data("admins.json", list)
+				return send_msg(admingp, "`ذخیره شد`", true)
+			end
+			return send_msg(admingp, "`ذخیره نشده است`", true)
+		else
+			return send_msg(admingp, "`بعد از این دستور آیدی ادمین مورد نظر را با درج یک فاصله وارد کنید`", true)
+		end
+	elseif msg.text:find('/setsite') and msg.chat.id == admingp then
+		local usertarget = msg.text:input()
+		if usertarget then
+			if site[tostring(usertarget)] then
+				site[tostring(usertarget)] = false
+				save_data("site.json", list)
+				return send_msg(admingp, "`ذخیره شد`", true)
+			end
+			return send_msg(admingp, "`ذخیره نشده است`", true)
+		else
+			return send_msg(admingp, "`بعد از این دستور سایت شرکت را با درج یک فاصله وارد کنید`", true)
+		end
+	elseif msg.text:find('/setbuy') and msg.chat.id == admingp then
+		local usertarget = msg.text:input()
+		if usertarget then
+			if buy[tostring(usertarget)] then
+				buy[tostring(usertarget)] = false
+				save_data("buy.json", list)
+				return send_msg(admingp, "`ذخیره شد`", true)
+			end
+			return send_msg(admingp, "`ذخیره نشده است`", true)
+		else
+			return send_msg(admingp, "`بعد از این دستور لینک پرداخت را با درج یک فاصله وارد کنید`", true)
+		end
+	elseif msg.text:find('/setstats') and msg.chat.id == admingp then
+		local usertarget = msg.text:input()
+		if usertarget then
+			if adminstats[tostring(usertarget)] then
+				adminstats[tostring(usertarget)] = false
+				save_data("adminstats.json", list)
+				return send_msg(admingp, "`ذخیره شد`", true)
+			end
+			return send_msg(admingp, "`ذخیره نشده است`", true)
+		else
+			return send_msg(admingp, "`بعد از این دستور آمار ادمین ها را با درج یک فاصله وارد کنید`", true)
+		end
 	elseif msg.text:find('/setlist') and msg.chat.id == admingp then
 		local usertarget = msg.text:input()
 		if usertarget then
@@ -174,7 +279,43 @@ function run(msg)
 			end
 			return send_msg(admingp, "`ذخیره نشده است`", true)
 		else
-			return send_msg(admingp, "`بعد از این دستور آی دی شخص مورد نظر را با درج یک فاصله وارد کنید`", true)
+			return send_msg(admingp, "`بعد از این دستور لیست فروش ادمین ها را با درج یک فاصله وارد کنید`", true)
+		end
+	elseif msg.text:find('/addshop') or msg.text == "اضافه کردن تعداد محصول" and msg.chat.id == admingp then
+		local usertarget = msg.text:input()
+		if usertarget then
+			if shop[tostring(usertarget)] then
+				shop[tostring(usertarget)] = false
+				save_data("shop.json", list)
+				return send_msg(admingp, "`ذخیره شد`", true)
+			end
+			return send_msg(admingp, "`ذخیره نشده است`", true)
+		else
+			return send_msg(admingp, "`بعد از این دستور لیست محصولات را با درج یک فاصله وارد کنید`", true)
+		end
+	elseif msg.text:find('/addnewshop') or msg.text == "اضافه کردن تعداد محصول به لیست" and msg.chat.id == admingp then
+		local usertarget = msg.text:input()
+		if usertarget then
+			if shop[tostring(usertarget)] then
+				shop[tostring(usertarget)] = false
+				save_data("shop.json", list)
+				return send_msg(admingp, "`ذخیره شد`", true)
+			end
+			return send_msg(admingp, "`ذخیره نشده است`", true)
+		else
+			return send_msg(admingp, "`بعد از این دستور نام محصول جدید را با درج یک فاصله وارد کنید`", true)
+		end
+	elseif msg.text:find('/addnumbershop') and msg.chat.id == admingp then
+		local usertarget = msg.text:input()
+		if usertarget then
+			if shop[tostring(usertarget)] then
+				shop[tostring(usertarget)] = false
+				save_data("shop.json", list)
+				return send_msg(admingp, "`ذخیره شد`", true)
+			end
+			return send_msg(admingp, "`ذخیره نشده است`", true)
+		else
+			return send_msg(admingp, "`بعد از این دستور لیست محصولات را با درج یک فاصله وارد کنید`", true)
 		end
 	elseif msg.text:find('/block') and msg.chat.id == admingp then
 		local usertarget = msg.text:input()
@@ -326,9 +467,6 @@ function run(msg)
 		else
 			return send_inline(msg.chat.id, about_txt, about_key)
 		end
-	elseif msg.text == "/about" or msg.text:lower() == "about v"..bot_version or msg.text == "ربات نسخه"..bot_version then
-		return send_inline(msg.chat.id, about_txt, about_key)
-	end
 
 	if msg.chat.id == admingp and chats.id > 0 then
 		return send_fwrd(chats.id, msg.chat.id, msg.message_id)
@@ -346,28 +484,4 @@ function run(msg)
 	end
 end
 
-function cbinline(msg)
-	bb = tonumber(msg.data)*5
-	aa = bb-4
-	local res,dat = http.request('http://api.varzesh3.com/v0.2/news/live/1360000')
-	if dat ~= 200 then return send_msg(msg.from.id, "`سرور خارج از سرویس میباشد لطفا بعدا تلاش کنید.`", true) end
-	res = json.decode(res)
-	list = "`"..aa.."-"..bb.." خبر آخر فوتبال`"
-	for i=aa,bb do
-		if res[i].Lead then
-			if string.len(res[i].Lead) > 10 then
-				newstext = ":\n<code>"..res[i].Lead.."</code>"
-			else
-				newstext = ""
-			end
-		else
-			newstext = ""
-		end
-		dandt = res[i].LastUpdate:gsub("T","   ") --getdate(res[i].Timestamp)
-		list = list.."\n<code>----------------------------------</code>\n"..i.."- <b>"..dandt.."</b>\n"..res[i].Title..newstext.."\n<a href='"..res[i].Url.."'>ادامه خبر</a>"
-	end
-	--return edit_msg(msg.id, list, cbqkey)
-	return send_inlines(msg.from.id, list, cbqkey)
-end
-
-return {launch = run, cbinline = cbinline}
+return {launch = run}
